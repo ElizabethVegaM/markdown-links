@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const Marked = require('marked');
 
-window.mdLinks = (markdown) => {
+exports.mdLinks = function(markdown) {
   const links = [];
   const renderer = new Marked.Renderer();
 
