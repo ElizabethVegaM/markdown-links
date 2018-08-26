@@ -13,45 +13,46 @@ mdLinks.mdLinks = (myPath, options) => {
   return new Promise((resolve, reject) => {
     if (options.validate) validate = true;
     if (!myPath) console.log('Debe ingresar un archivo directorio');
-    let isAbsolute = path.resolve(myPath) === path.normalize(myPath).replace(/[\/|\\]$/, '');
-    if (isAbsolute === false) {
-      let resolvedPath = path.resolve(myPath);
-      if (mdLinks.isFileOrDirectory(resolvedPath) === 'directory') {
-        mdLinks.isDirectory(resolvedPath).then((response) => {
+    let resolvedPath = mdLinks.validatePath(myPath);
+    console.log(resolvedPath);
+    let validateTypeOfPath = mdLinks.isFileOrDirectory(resolvedPath);
+    console.log(validateTypeOfPath);  
+    if (validateTypeOfPath === 'directory') {
+      mdLinks.isDirectory(resolvedPath).then((response) => {
+        resolve(response);
+      }).catch((err) => {
+        console.error(err);
+        reject(err);
+      });
+    } else if (validateTypeOfPath === 'file') {
+      for (let i = 0; i < files.length; i++) {
+        mdLinks.isFile(resolvedPath).then((response) => {
           resolve(response);
         }).catch((err) => {
           console.error(err);
-        });
-      } else if (mdLinks.isFileOrDirectory(resolvedPath) === 'file') {
-        for (let i = 0; i < files.length; i++) {
-          mdLinks.isFile(resolvedPath).then((response) => {
-            resolve(response);
-          }).catch((err) => {
-            console.error(err);    
-          });
-        }
-      }
-    }
-    if (mdLinks.isFileOrDirectory(myPath) === 'directory') {
-      mdLinks.isDirectory(myPath).then((response) => {
-        resolve(response);
-      }).catch((err) => {
-        console.error(err);    
-      });
-    } else if (mdLinks.isFileOrDirectory(myPath) === 'file') {
-      for (let i = 0; i < files.length; i++) {
-        mdLinks.isFile(myPath).then((response) => {
-          resolve(response);
-        }).catch((err) => {
-          console.error(err);    
+          reject(err);    
         });
       }
     }
   });
 };
 
+mdLinks.validatePath = (myPath) => {
+  try {
+    const isAbsolute = mdLinks.isAbsolute(myPath);
+    if (isAbsolute === false) {
+      return mdLinks.convertToAbsolutePath(myPath); 
+    } else if (isAbsolute === true) {
+      return myPath;
+    }
+  } catch (error) {
+    console.error(error, 'No se puede verificar el archivo');
+  }
+};
+
 mdLinks.isFileOrDirectory = (myPath) => {
   try {
+    console.log(myPath);
     const fsStats = fs.lstatSync(myPath);
     if (fsStats.isFile()) {
       return 'file';
@@ -61,6 +62,19 @@ mdLinks.isFileOrDirectory = (myPath) => {
   } catch (err) {
     console.error(err, 'No es un archivo o directorio');
   }
+};
+
+mdLinks.isAbsolute = (myPath) => {
+  const checkPath = path.resolve(myPath) === path.normalize(myPath).replace(/[\/|\\]$/, '');
+  if (checkPath === false) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+mdLinks.convertToAbsolutePath = (myPath) => {
+  return path.resolve(myPath);
 };
 
 mdLinks.isDirectory = (myPath) => {
@@ -85,6 +99,7 @@ mdLinks.isFile = (myPath) => {
 mdLinks.validateLinks = (links) => {
 
 };
+
 
 // Función necesaria para extraer los links usando marked
 // (tomada desde biblioteca del mismo nombre y modificada para el ejercicio)
