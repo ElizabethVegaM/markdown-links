@@ -1,42 +1,31 @@
-const fs = require('fs');
-const path = require('path');
-const Marked = require('marked');
+#!/usr/bin/env node
 
-exports.mdLinks = function(markdown) {
-  const links = [];
-  const renderer = new Marked.Renderer();
+const mdLinks = require('../scl-2018-01-FE-markdown/mdlinks').mdLinks;
+const [, , ...args] = process.argv;
 
-  // Taken from https://github.com/markedjs/marked/issues/1279
-  const linkWithImageSizeSupport = /^!?\[((?:\[[^\[\]]*\]|\\[\[\]]?|`[^`]*`|[^\[\]\\])*?)\]\(\s*(<(?:\\[<>]?|[^\s<>\\])*>|(?:\\[()]?|\([^\s\x00-\x1f()\\]*\)|[^\s\x00-\x1f()\\])*?(?:\s+=(?:[\w%]+)?x(?:[\w%]+)?)?)(?:\s+("(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)))?\s*\)/;
-
-  Marked.InlineLexer.rules.normal.link = linkWithImageSizeSupport;
-  Marked.InlineLexer.rules.gfm.link = linkWithImageSizeSupport;
-  Marked.InlineLexer.rules.breaks.link = linkWithImageSizeSupport;
-
-  renderer.link = function(href, title, text) {
-    links.push({
-      href: href,
-      text: text,
-      title: title,
-    });
-  };
-  renderer.image = function(href, title, text) {
-    href = href.replace(/ =\d*%?x\d*%?$/, '');
-    links.push({
-      href: href,
-      text: text,
-      title: title,
-    });
-  };
-  Marked(markdown, {renderer: renderer});
-  console.log(links);
-  return links;
+if (require.main === module) {
+  let options = {};
+  if (process.argv.includes('--validate')) options.validate = true;
+  mdLinks(process.argv[2], options).then((result) => {
+    for (let i = 0; i < files.length; i++) {
+      console.log(result);
+    }
+  }).catch((err) => {
+    console.error(err);
+  });
 };
 
-
-// Función necesaria para extraer los links usando marked
-// (tomada desde biblioteca del mismo nombre y modificada para el ejercicio)
-// Recibe texto en markdown y retorna sus links en un arreglo
-function markdownLinkExtractor(markdown) {
-  
-};
+// // Lee los archivos que se encuentran en la carpeta seleccionada
+// fs.readdir(process.argv[2], 'utf8', function(err, files) {
+//   if (err) throw err;
+//   console.log(files);
+//   for (let i = 0; i < files.length; i++) {
+//     if (path.extname(files[i]) === '.md') {
+//       console.log(files[i]);
+//       fs.readFile(`${files[i]}`, 'utf8', (err, data) => {
+//         if (err) throw err;
+//         index.mdLinks(data);
+//       });
+//     }
+//   }
+// });

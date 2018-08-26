@@ -25,7 +25,7 @@
   "author": "ElizaBeth Vega Medina",
   "license": "ISC",
   "bin": {
-    "md-links": "cli.js"
+    "md-links": "index.js"
   },
   "bugs": {
     "url": "https://github.com/ElizabethVegaM/scl-2018-01-FE-markdown/issues"
