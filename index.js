@@ -14,18 +14,3 @@ if (require.main === module) {
     console.error(err);
   });
 };
-
-// // Lee los archivos que se encuentran en la carpeta seleccionada
-// fs.readdir(process.argv[2], 'utf8', function(err, files) {
-//   if (err) throw err;
-//   console.log(files);
-//   for (let i = 0; i < files.length; i++) {
-//     if (path.extname(files[i]) === '.md') {
-//       console.log(files[i]);
-//       fs.readFile(`${files[i]}`, 'utf8', (err, data) => {
-//         if (err) throw err;
-//         index.mdLinks(data);
-//       });
-//     }
-//   }
-// });

@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const Marked = require('marked');
+// para validar urls
+// const fetch = require('node-fetch');
 let mdLinks = {};
 let validate = false;
 
@@ -12,21 +14,38 @@ mdLinks.mdLinks = (myPath, options) => {
     if (options.validate) validate = true;
     if (!myPath) console.log('Debe ingresar un archivo directorio');
     let isAbsolute = path.resolve(myPath) === path.normalize(myPath).replace(/[\/|\\]$/, '');
-    console.log(isAbsolute);
     if (isAbsolute === false) {
       let resolvedPath = path.resolve(myPath);
-      console.log(resolvedPath); 
       if (mdLinks.isFileOrDirectory(resolvedPath) === 'directory') {
-        mdLinks.isDirectory(resolvedPath);
+        mdLinks.isDirectory(resolvedPath).then((response) => {
+          resolve(response);
+        }).catch((err) => {
+          console.error(err);
+        });
       } else if (mdLinks.isFileOrDirectory(resolvedPath) === 'file') {
-        mdLinks.isFile(resolvedPath);
+        for (let i = 0; i < files.length; i++) {
+          mdLinks.isFile(resolvedPath).then((response) => {
+            resolve(response);
+          }).catch((err) => {
+            console.error(err);    
+          });
+        }
       }
     }
-    console.log(myPath);
     if (mdLinks.isFileOrDirectory(myPath) === 'directory') {
-      mdLinks.isDirectory(myPath);
+      mdLinks.isDirectory(myPath).then((response) => {
+        resolve(response);
+      }).catch((err) => {
+        console.error(err);    
+      });
     } else if (mdLinks.isFileOrDirectory(myPath) === 'file') {
-      mdLinks.isFile(myPath);
+      for (let i = 0; i < files.length; i++) {
+        mdLinks.isFile(myPath).then((response) => {
+          resolve(response);
+        }).catch((err) => {
+          console.error(err);    
+        });
+      }
     }
   });
 };
@@ -48,13 +67,23 @@ mdLinks.isDirectory = (myPath) => {
   fs.readdir(myPath, 'utf8', function(err, files) {
     if (err) throw err;
     console.log(files);
+    files.forEach(element => {
+      mdLinks.isFile(element);
+    });
   });
 };
 
 mdLinks.isFile = (myPath) => {
   if (path.extname(myPath) === '.md') {
-    console.log(myPath);  
+    fs.readFile(myPath, 'utf8', (err, data) => {
+      if (err) throw err;
+      mdLinks.markdownLinkExtractor(data);
+    }); 
   }
+};
+
+mdLinks.validateLinks = (links) => {
+
 };
 
 // Función necesaria para extraer los links usando marked
