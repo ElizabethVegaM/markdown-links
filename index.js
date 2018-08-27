@@ -7,9 +7,9 @@ if (require.main === module) {
   let options = {};
   if (process.argv.includes('--validate')) options.validate = true;
   mdLinks(process.argv[2], options).then((result) => {
-    for (let i = 0; i < files.length; i++) {
-      console.log(result);
-    }
+    result.forEach(element => {
+      print('Hola');
+    });
   }).catch((err) => {
     console.error(err);
   });

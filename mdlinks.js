@@ -14,25 +14,11 @@ mdLinks.mdLinks = (myPath, options) => {
     if (options.validate) validate = true;
     if (!myPath) console.log('Debe ingresar un archivo directorio');
     let resolvedPath = mdLinks.validatePath(myPath);
-    console.log(resolvedPath);
-    let validateTypeOfPath = mdLinks.isFileOrDirectory(resolvedPath);
-    console.log(validateTypeOfPath);  
-    if (validateTypeOfPath === 'directory') {
-      mdLinks.isDirectory(resolvedPath).then((response) => {
-        resolve(response);
-      }).catch((err) => {
-        console.error(err);
-        reject(err);
-      });
+    let validateTypeOfPath = mdLinks.isFileOrFolder(resolvedPath);
+    if (validateTypeOfPath === 'folder') {
+      mdLinks.isFolder(resolvedPath);
     } else if (validateTypeOfPath === 'file') {
-      for (let i = 0; i < files.length; i++) {
-        mdLinks.isFile(resolvedPath).then((response) => {
-          resolve(response);
-        }).catch((err) => {
-          console.error(err);
-          reject(err);    
-        });
-      }
+      mdLinks.isFile(resolvedPath);
     }
   });
 };
@@ -50,20 +36,6 @@ mdLinks.validatePath = (myPath) => {
   }
 };
 
-mdLinks.isFileOrDirectory = (myPath) => {
-  try {
-    console.log(myPath);
-    const fsStats = fs.lstatSync(myPath);
-    if (fsStats.isFile()) {
-      return 'file';
-    } else if (fsStats.isDirectory()) {
-      return 'directory';
-    }
-  } catch (err) {
-    console.error(err, 'No es un archivo o directorio');
-  }
-};
-
 mdLinks.isAbsolute = (myPath) => {
   const checkPath = path.resolve(myPath) === path.normalize(myPath).replace(/[\/|\\]$/, '');
   if (checkPath === false) {
@@ -77,7 +49,20 @@ mdLinks.convertToAbsolutePath = (myPath) => {
   return path.resolve(myPath);
 };
 
-mdLinks.isDirectory = (myPath) => {
+mdLinks.isFileOrFolder = (myPath) => {
+  try {
+    const fsStats = fs.lstatSync(myPath);
+    if (fsStats.isFile()) {
+      return 'file';
+    } else if (fsStats.isDirectory()) {
+      return 'folder';
+    }
+  } catch (err) {
+    console.error(err, 'No es un archivo o carpeta');
+  }
+};
+
+mdLinks.isFolder = (myPath) => {
   fs.readdir(myPath, 'utf8', function(err, files) {
     if (err) throw err;
     console.log(files);
@@ -99,7 +84,6 @@ mdLinks.isFile = (myPath) => {
 mdLinks.validateLinks = (links) => {
 
 };
-
 
 // Función necesaria para extraer los links usando marked
 // (tomada desde biblioteca del mismo nombre y modificada para el ejercicio)
@@ -131,8 +115,8 @@ mdLinks.markdownLinkExtractor = (markdown) => {
     });
   };
   Marked(markdown, {renderer: renderer});
-  console.log(links);
   return links;
 };
 
 module.exports = mdLinks;
+
