@@ -1,25 +1,27 @@
 const fs = require('fs');
 const path = require('path');
 const Marked = require('marked');
-// para validar urls
-// const fetch = require('node-fetch');
+const fetch = require('node-fetch');
 let mdLinks = {};
 let validate = false;
-
-// 
-// path.resolve(_yourPath) === path.normalize(_yourPath).replace(/[\/|\\]$/, '')
 
 mdLinks.mdLinks = (myPath, options) => {
   return new Promise((resolve, reject) => {
     if (options.validate) validate = true;
     if (!myPath) console.log('Debe ingresar un archivo directorio');
     let resolvedPath = mdLinks.validatePath(myPath);
+    console.log(resolvedPath);
     let validateTypeOfPath = mdLinks.isFileOrFolder(resolvedPath);
     if (validateTypeOfPath === 'folder') {
       mdLinks.isFolder(resolvedPath);
     } else if (validateTypeOfPath === 'file') {
-      mdLinks.isFile(resolvedPath);
+      try {
+        mdLinks.isFile(resolvedPath);
+      } catch (error) {
+        console.error(err);
+      }
     }
+    resolve();
   });
 };
 
@@ -63,7 +65,7 @@ mdLinks.isFileOrFolder = (myPath) => {
 };
 
 mdLinks.isFolder = (myPath) => {
-  fs.readdir(myPath, 'utf8', function(err, files) {
+  fs.readdirSync(myPath, 'utf8', function(err, files) {
     if (err) throw err;
     console.log(files);
     files.forEach(element => {
@@ -72,17 +74,31 @@ mdLinks.isFolder = (myPath) => {
   });
 };
 
-mdLinks.isFile = (myPath) => {
-  if (path.extname(myPath) === '.md') {
-    fs.readFile(myPath, 'utf8', (err, data) => {
-      if (err) throw err;
-      mdLinks.markdownLinkExtractor(data);
-    }); 
-  }
+mdLinks.isFile = (file) => {
+  return new Promise((resolve, reject) => {
+    const fileExt = mdLinks.checkExtName(file);
+    if (fileExt === '.md') {
+      fs.readFile(file, 'utf8', (err, data) => {
+        if (err) return reject(err);
+        return mdLinks.markdownLinkExtractor(data);
+      });
+    }
+    /* let promises = [];
+      files.forEach(file => {
+        promises.push(mdLinks.mdLinks(`${path}/${file}`).then(response => response)
+          .catch(err => reject(err)));
+      });
+      Promise.all(promises).then(values => resolve(values.reduce((elem1, elem2) => elem1.concat(elem2))));
+  */
+  });
+};
+
+mdLinks.checkExtName = (file) => {
+  return path.extname(file);
 };
 
 mdLinks.validateLinks = (links) => {
-
+  
 };
 
 // Función necesaria para extraer los links usando marked
@@ -103,7 +119,7 @@ mdLinks.markdownLinkExtractor = (markdown) => {
     links.push({
       href: href,
       text: text,
-      title: title,
+      // title: title,
     });
   };
   renderer.image = function(href, title, text) {
@@ -111,10 +127,11 @@ mdLinks.markdownLinkExtractor = (markdown) => {
     links.push({
       href: href,
       text: text,
-      title: title,
+      // title: title,
     });
   };
   Marked(markdown, {renderer: renderer});
+  console.log(links);
   return links;
 };
 
