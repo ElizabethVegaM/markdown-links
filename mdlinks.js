@@ -52,8 +52,9 @@ mdLinks.validatePath = (myPath) => {
 
 mdLinks.isFileOrDirectory = (myPath) => {
   try {
-    console.log(myPath);
+    console.log(myPath + ' (js 55)');
     const fsStats = fs.lstatSync(myPath);
+    console.log(fsStats);
     if (fsStats.isFile()) {
       return 'file';
     } else if (fsStats.isDirectory()) {
