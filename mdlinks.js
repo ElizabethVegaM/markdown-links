@@ -1,3 +1,4 @@
+
 const fs = require('fs');
 const path = require('path');
 const Marked = require('marked');
@@ -65,11 +66,12 @@ mdLinks.isFolder = (myPath) => {
   return new Promise((resolve, reject) => {
     fs.readdir(myPath, 'utf8', function(err, files) {
       const filePromises = files.map((aFile) => {
-        return mdLinks.isFile(myPath, aFile);
+        let filePath = myPath + '/' + aFile;
+        console.log(filePath);
+        return mdLinks.isFile(filePath);
       });
       Promise.all(filePromises).then((filesData) => {
         filesData = filesData.reduce((value1, value2) => value1.concat(value2));
-        filesData = myPath + '/' + filesData;
         resolve(filesData);
       }).catch((error) => {
         console.error('Error > ' + error);
@@ -85,6 +87,8 @@ mdLinks.isFile = (file) => {
       fs.readFile(file, 'utf8', (err, data) => {
         if (err) reject(err);
         data = data.split('\n').map(element => mdLinks.markdownLinkExtractor(element)).filter(element => element.length !== 0).reduce((value1, value2) => value1.concat(value2));
+        console.log(data);
+        
         resolve(data);
       }); 
     }
