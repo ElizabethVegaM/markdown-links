@@ -10,9 +10,7 @@ if (require.main === module) {
   let options = {};
   if (process.argv.includes('--validate')) options.validate = true;
   mdLinks(path.join(process.cwd(), args[0]), options).then((links) => {
-    console.log('holi');
-    // let link = [];
-    // link.push(`{href : ${links.href}, text : ${links.text}}`);  
+    console.log(links);
   }).catch((err) => {
     console.error(err);
   });

@@ -7,21 +7,18 @@ let validate = false;
 
 mdLinks.mdLinks = (myPath, options) => {
   return new Promise((resolve, reject) => {
+    let file;
     if (options.validate) validate = true;
     if (!myPath) console.log('Debe ingresar un archivo directorio');
     let resolvedPath = mdLinks.validatePath(myPath);
-    console.log(resolvedPath);
     let validateTypeOfPath = mdLinks.isFileOrFolder(resolvedPath);
     if (validateTypeOfPath === 'folder') {
       mdLinks.isFolder(resolvedPath);
     } else if (validateTypeOfPath === 'file') {
-      try {
-        mdLinks.isFile(resolvedPath);
-      } catch (error) {
-        console.error(err);
-      }
+      mdLinks.isFile(resolvedPath).then((data) => {
+        resolve(data);
+      });   
     }
-    resolve();
   });
 };
 
@@ -65,11 +62,18 @@ mdLinks.isFileOrFolder = (myPath) => {
 };
 
 mdLinks.isFolder = (myPath) => {
-  fs.readdirSync(myPath, 'utf8', function(err, files) {
-    if (err) throw err;
-    console.log(files);
-    files.forEach(element => {
-      mdLinks.isFile(element);
+  return new Promise((resolve, reject) => {
+    fs.readdir(myPath, 'utf8', function(err, files) {
+      const filePromises = files.map((aFile) => {
+        return mdLinks.isFile(myPath, aFile);
+      });
+      Promise.all(filePromises).then((filesData) => {
+        filesData = filesData.reduce((value1, value2) => value1.concat(value2));
+        filesData = myPath + '/' + filesData;
+        resolve(filesData);
+      }).catch((error) => {
+        console.error('Error > ' + error);
+      });
     });
   });
 };
@@ -79,17 +83,11 @@ mdLinks.isFile = (file) => {
     const fileExt = mdLinks.checkExtName(file);
     if (fileExt === '.md') {
       fs.readFile(file, 'utf8', (err, data) => {
-        if (err) return reject(err);
-        return mdLinks.markdownLinkExtractor(data);
-      });
+        if (err) reject(err);
+        data = data.split('\n').map(element => mdLinks.markdownLinkExtractor(element)).filter(element => element.length !== 0).reduce((value1, value2) => value1.concat(value2));
+        resolve(data);
+      }); 
     }
-    /* let promises = [];
-      files.forEach(file => {
-        promises.push(mdLinks.mdLinks(`${path}/${file}`).then(response => response)
-          .catch(err => reject(err)));
-      });
-      Promise.all(promises).then(values => resolve(values.reduce((elem1, elem2) => elem1.concat(elem2))));
-  */
   });
 };
 
@@ -98,7 +96,7 @@ mdLinks.checkExtName = (file) => {
 };
 
 mdLinks.validateLinks = (links) => {
-  
+  fetch(link);
 };
 
 // Función necesaria para extraer los links usando marked
@@ -107,7 +105,6 @@ mdLinks.validateLinks = (links) => {
 mdLinks.markdownLinkExtractor = (markdown) => {
   const links = [];
   const renderer = new Marked.Renderer();
-
   // Taken from https://github.com/markedjs/marked/issues/1279
   const linkWithImageSizeSupport = /^!?\[((?:\[[^\[\]]*\]|\\[\[\]]?|`[^`]*`|[^\[\]\\])*?)\]\(\s*(<(?:\\[<>]?|[^\s<>\\])*>|(?:\\[()]?|\([^\s\x00-\x1f()\\]*\)|[^\s\x00-\x1f()\\])*?(?:\s+=(?:[\w%]+)?x(?:[\w%]+)?)?)(?:\s+("(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)))?\s*\)/;
 
@@ -119,7 +116,7 @@ mdLinks.markdownLinkExtractor = (markdown) => {
     links.push({
       href: href,
       text: text,
-      // title: title,
+      // file: filw,
     });
   };
   renderer.image = function(href, title, text) {
@@ -131,9 +128,7 @@ mdLinks.markdownLinkExtractor = (markdown) => {
     });
   };
   Marked(markdown, {renderer: renderer});
-  console.log(links);
   return links;
 };
 
 module.exports = mdLinks;
-
