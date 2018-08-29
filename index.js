@@ -9,8 +9,22 @@ const [, , ...args] = process.argv;
 if (require.main === module) {
   let options = {};
   if (process.argv.includes('--validate')) options.validate = true;
+  if (process.argv.includes('--stats')) options.stats = true;
   mdLinks(path.join(process.cwd(), args[0]), options).then((links) => {
-    console.log(links);
+    let result = [];
+    links.map(element => {
+      result.push({
+        href: element.href, 
+        text: element.text, 
+        file: element.file,
+      });
+      if (options.validate = true) {
+        result.push({
+          status: 'holi',
+        });
+      }
+    });
+    console.log(result);
   }).catch((err) => {
     console.error(err);
   });

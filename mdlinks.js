@@ -8,13 +8,15 @@ let validate = false;
 
 mdLinks.mdLinks = (myPath, options) => {
   return new Promise((resolve, reject) => {
-    let file;
     if (options.validate) validate = true;
+    if (options.stats) validate = true;
     if (!myPath) console.log('Debe ingresar un archivo directorio');
     let resolvedPath = mdLinks.validatePath(myPath);
     let validateTypeOfPath = mdLinks.isFileOrFolder(resolvedPath);
     if (validateTypeOfPath === 'folder') {
-      mdLinks.isFolder(resolvedPath);
+      mdLinks.isFolder(resolvedPath).then((data) => {
+        resolve(data);
+      });
     } else if (validateTypeOfPath === 'file') {
       mdLinks.isFile(resolvedPath).then((data) => {
         resolve(data);
@@ -67,7 +69,6 @@ mdLinks.isFolder = (myPath) => {
     fs.readdir(myPath, 'utf8', function(err, files) {
       const filePromises = files.map((aFile) => {
         let filePath = myPath + '/' + aFile;
-        console.log(filePath);
         return mdLinks.isFile(filePath);
       });
       Promise.all(filePromises).then((filesData) => {
@@ -86,9 +87,7 @@ mdLinks.isFile = (file) => {
     if (fileExt === '.md') {
       fs.readFile(file, 'utf8', (err, data) => {
         if (err) reject(err);
-        data = data.split('\n').map(element => mdLinks.markdownLinkExtractor(element)).filter(element => element.length !== 0).reduce((value1, value2) => value1.concat(value2));
-        console.log(data);
-        
+        data = data.split('\n').map(element => mdLinks.markdownLinkExtractor(file, element)).filter(element => element.length !== 0).reduce((value1, value2) => value1.concat(value2));
         resolve(data);
       }); 
     }
@@ -106,7 +105,7 @@ mdLinks.validateLinks = (links) => {
 // Función necesaria para extraer los links usando marked
 // (tomada desde biblioteca del mismo nombre y modificada para el ejercicio)
 // Recibe texto en markdown y retorna sus links en un arreglo
-mdLinks.markdownLinkExtractor = (markdown) => {
+mdLinks.markdownLinkExtractor = (file, markdown, line) => {
   const links = [];
   const renderer = new Marked.Renderer();
   // Taken from https://github.com/markedjs/marked/issues/1279
@@ -120,7 +119,7 @@ mdLinks.markdownLinkExtractor = (markdown) => {
     links.push({
       href: href,
       text: text,
-      // file: filw,
+      file: file,
     });
   };
   renderer.image = function(href, title, text) {
@@ -128,7 +127,7 @@ mdLinks.markdownLinkExtractor = (markdown) => {
     links.push({
       href: href,
       text: text,
-      // title: title,
+      file: file,
     });
   };
   Marked(markdown, {renderer: renderer});
