@@ -9,6 +9,7 @@
   "dependencies": {
     "jest": "^23.5.0",
     "marked": "^0.5.0",
+    "node-fetch": "^2.2.0",
     "npm": "^6.4.0"
   },
   "devDependencies": {
