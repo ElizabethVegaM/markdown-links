@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const Marked = require('marked');
 let mdLinks = {};
+let validate = false;
+let stats = false;
 
 mdLinks.mdLinks = (myPath, options) => {
   return new Promise((resolve, reject) => {
