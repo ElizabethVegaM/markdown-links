@@ -4,7 +4,7 @@ const mdLinks = require('../scl-2018-01-FE-markdown/mdlinks').mdLinks;
 const path = require('path');
 const fetch = require('node-fetch');
 const [, , ...args] = process.argv;
-var colors = require('colors');
+var colors = require('colors/safe');
 // en el caso de arriba omite las primeras dos palabras que escribe el usuario en la consola
 // por cada espacio se hace un nuevo elemento en process.argv
 
