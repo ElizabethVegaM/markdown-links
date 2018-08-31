@@ -17,7 +17,6 @@ mdLinks.mdLinks = (myPath, options) => {
     } else if (validateTypeOfPath === 'file') {
       mdLinks.isFile(resolvedPath).then(data => resolve(data));   
     }
-    
   });
 };
 
