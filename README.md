@@ -1,101 +1,91 @@
-# Título del Proyecto
+# Markdown Links Extractor
 
-_Acá va un párrafo que describa lo que es el proyecto_
+Pequeña librería que analiza archivos de tipo [Markdown](https://es.wikipedia.org/wiki/Markdown)(.md) para verificar los links que contengan y entregar algunas estadísticas.
 
 ## Comenzando 🚀
 
-_Estas instrucciones te permitirán obtener una copia del proyecto en funcionamiento en tu máquina local para propósitos de desarrollo y pruebas._
-
-Mira **Deployment** para conocer como desplegar el proyecto.
-
+En la pestaña 'releases' encontrarás el archivo .zip correspondiente al proyecto, el que deberás descargar para su posterior utilización.
 
 ### Pre-requisitos 📋
 
-_Que cosas necesitas para instalar el software y como instalarlas_
+Para el correcto funcionamiento de este proyecto necesitas tener instalado [Node.js](https://nodejs.org/) en tu computador. Para las pruebas unitarias se utilizó [Jest](https://jestjs.io/) por su simpleza.
 
-```
-Da un ejemplo
-```
+#### Paquetes necesarios 
+
+- [Path](https://nodejs.org/api/path.html)
+- [File System](https://nodejs.org/api/fs.html)
+- [Colors](https://www.npmjs.com/package/colors)
 
 ### Instalación 🔧
 
-_Una serie de ejemplos paso a paso que te dice lo que debes ejecutar para tener un entorno de desarrollo ejecutandose_
+Para utilizar esta librería primero debes descomprimir el archivo .zip que se encuentra disponible en la pestaña 'releases' de este repositorio.
 
-_Dí cómo será ese paso_
-
-```
-Da un ejemplo
-```
-
-_Y repite_
+Debes instalar el módulo con npm
 
 ```
-hasta finalizar
+npm install md-links
 ```
 
-_Finaliza con un ejemplo de cómo obtener datos del sistema o como usarlos para una pequeña demo_
-
-## Ejecutando las pruebas ⚙️
-
-_Explica como ejecutar las pruebas automatizadas para este sistema_
-
-### Analice las pruebas end-to-end 🔩
-
-_Explica que verifican estas pruebas y por qué_
+Instalar Jest en caso de que lo utilices
 
 ```
-Da un ejemplo
+npm install --save-dev jest
 ```
-
-### Y las pruebas de estilo de codificación ⌨️
-
-_Explica que verifican estas pruebas y por qué_
+Instalar los paquetes necesarios
 
 ```
-Da un ejemplo
+npm install --save path
+var fs = require('fs')
+npm install colors
 ```
 
-## Deployment 📦
+## Versiones de la librería 📄
 
-_Agrega notas adicionales sobre como hacer deploy_
+### Versión 1.0.0
+Versión inicial con todas las características básicas. Se incluye la opción de validar links (--validate) y ver estadísticas básicas (--stats)
+### Versión 1.0.1
+- Se añade el paquete [Colors](https://www.npmjs.com/package/colors) para visualizar mejor los datos en la terminal.
+- Se mejora la manera en la que se imprimen los datos.
 
-## Construido con 🛠️
+## Snippets de uso 🎁
 
-_Menciona las herramientas que utilizaste para crear tu proyecto_
+Este proyecto puede ser utilizado a través de la terminal CLI
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - El framework web usado
-* [Maven](https://maven.apache.org/) - Manejador de dependencias
-* [ROME](https://rometools.github.io/rome/) - Usado para generar RSS
+Por ejemplo:
 
-## Contribuyendo 🖇️
+`md-links <path-to-file> [options]`
+Donde options puede ser 'validate' para verificar el estado del link y/o 'stats' para ver estádisticas del archivo(path) como cantidad de links encontrados, links rotos, etc 
 
-Por favor lee el [CONTRIBUTING.md](https://gist.github.com/villanuevand/xxxxxx) para detalles de nuestro código de conducta, y el proceso para enviarnos pull requests.
+```
+$ md-links README.md
+ [
+   {'./some/example.md: 10 - http://algo.com/2/3/ Link a algo'}
+   {'./some/example.md: 15 - https://otra-cosa.net/algun-doc.html algún doc'}
+   {'./some/example.md: 14 - http://google.com/ Google'}
+ ]
+```
+Usando validate:
 
-## Versionado 📌
+```
+$ md-links README.md --validate
+ [
+   {'./some/example.md: 10 - http://algo.com/2/3/ Link a algo 200 true'}
+   {'./some/example.md: 15 - https://otra-cosa.net/algun-doc.html 404 false'}
+   {'./some/example.md: 14 - http://google.com/ 200 true'}
+ ]
+```
 
-Usamos [SemVer](http://semver.org/) para el versionado. Para todas las versiones disponibles, mira los [tags en este repositorio](https://github.com/tu/proyecto/tags).
+Usando validate y --stats (pueden usarse tanto juntos como separados)
+```
+$ md-links README.md --validate
+ [
+   {'./some/example.md: 10 - http://algo.com/2/3/ Link a algo 200 true'}
+   {'./some/example.md: 15 - https://otra-cosa.net/algun-doc.html 404 false'}
+   {'./some/example.md: 14 - http://google.com/ 200 true'}
+   { totals: 3, success: 2, failure: 1 }
+ ]
+```
 
 ## Autores ✒️
 
-_Menciona a todos aquellos que ayudaron a levantar el proyecto desde sus inicios_
-
-* **Andrés Villanueva** - *Trabajo Inicial* - [villanuevand](https://github.com/villanuevand)
-* **Fulanito Detal** - *Documentación* - [fulanitodetal](#fulanito-de-tal)
-
-También puedes mirar la lista de todos los [contribuyentes](https://github.com/your/project/contributors) quíenes han participado en este proyecto. 
-
-## Licencia 📄
-
-Este proyecto está bajo la Licencia (Tu Licencia) - mira el archivo [LICENSE.md](LICENSE.md) para detalles
-
-## Expresiones de Gratitud 🎁
-
-* Comenta a otros sobre este proyecto 📢
-* Invita una cerveza 🍺 a alguien del equipo. 
-* Da las gracias públicamente 🤓.
-* etc.
-
-
-
----
-⌨️ con ❤️ por [Villanuevand](https://github.com/Villanuevand) 😊
+* **Elizabeth Vega** - [ElizabethVegaM](https://github.com/ElizabethVegaM)
