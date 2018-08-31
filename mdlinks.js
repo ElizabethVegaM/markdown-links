@@ -1,31 +1,24 @@
-
 const fs = require('fs');
 const path = require('path');
 const Marked = require('marked');
-const fetch = require('node-fetch');
 let mdLinks = {};
-let validate = false;
 
 mdLinks.mdLinks = (myPath, options) => {
   return new Promise((resolve, reject) => {
     if (options.validate) validate = true;
-    if (options.stats) validate = true;
+    if (options.stats) stats = true;
     if (!myPath) console.log('Debe ingresar un archivo directorio');
     let resolvedPath = mdLinks.validatePath(myPath);
     let validateTypeOfPath = mdLinks.isFileOrFolder(resolvedPath);
     if (validateTypeOfPath === 'folder') {
-      mdLinks.isFolder(resolvedPath).then((data) => {
-        resolve(data);
-      });
+      mdLinks.isFolder(resolvedPath).then(data => resolve(data));
     } else if (validateTypeOfPath === 'file') {
-      mdLinks.isFile(resolvedPath).then((data) => {
-        resolve(data);
-      });   
+      mdLinks.isFile(resolvedPath).then(data => resolve(data));   
     }
   });
 };
 
-mdLinks.validatePath = (myPath) => {
+mdLinks.validatePath = myPath => {
   try {
     const isAbsolute = mdLinks.isAbsolute(myPath);
     if (isAbsolute === false) {
@@ -38,7 +31,7 @@ mdLinks.validatePath = (myPath) => {
   }
 };
 
-mdLinks.isAbsolute = (myPath) => {
+mdLinks.isAbsolute = myPath => {
   const checkPath = path.resolve(myPath) === path.normalize(myPath).replace(/[\/|\\]$/, '');
   if (checkPath === false) {
     return false;
@@ -47,24 +40,18 @@ mdLinks.isAbsolute = (myPath) => {
   }
 };
 
-mdLinks.convertToAbsolutePath = (myPath) => {
-  return path.resolve(myPath);
-};
+mdLinks.convertToAbsolutePath = myPath => path.resolve(myPath);
 
 mdLinks.isFileOrFolder = (myPath) => {
-  try {
-    const fsStats = fs.lstatSync(myPath);
-    if (fsStats.isFile()) {
-      return 'file';
-    } else if (fsStats.isDirectory()) {
-      return 'folder';
-    }
-  } catch (err) {
-    console.error(err, 'No es un archivo o carpeta');
+  const fsStats = fs.lstatSync(myPath);
+  if (fsStats.isFile()) {
+    return 'file';
+  } else if (fsStats.isDirectory()) {
+    return 'folder';
   }
 };
 
-mdLinks.isFolder = (myPath) => {
+mdLinks.isFolder = myPath => {
   return new Promise((resolve, reject) => {
     fs.readdir(myPath, 'utf8', function(err, files) {
       const filePromises = files.map((aFile) => {
@@ -87,24 +74,15 @@ mdLinks.isFile = (file) => {
     if (fileExt === '.md') {
       fs.readFile(file, 'utf8', (err, data) => {
         if (err) reject(err);
-        data = data.split('\n').map(element => mdLinks.markdownLinkExtractor(file, element)).filter(element => element.length !== 0).reduce((value1, value2) => value1.concat(value2));
+        data = data.split('\n').map(element => mdLinks.markdownLinkExtractor(file, element, data.indexOf(element) + 1)).filter(element => element.length !== 0).reduce((value1, value2) => value1.concat(value2));
         resolve(data);
       }); 
     }
   });
 };
 
-mdLinks.checkExtName = (file) => {
-  return path.extname(file);
-};
+mdLinks.checkExtName = file => path.extname(file);
 
-mdLinks.validateLinks = (links) => {
-  fetch(link);
-};
-
-// Función necesaria para extraer los links usando marked
-// (tomada desde biblioteca del mismo nombre y modificada para el ejercicio)
-// Recibe texto en markdown y retorna sus links en un arreglo
 mdLinks.markdownLinkExtractor = (file, markdown, line) => {
   const links = [];
   const renderer = new Marked.Renderer();
@@ -120,6 +98,8 @@ mdLinks.markdownLinkExtractor = (file, markdown, line) => {
       href: href,
       text: text,
       file: file,
+      line: line,
+      status: 'holo',
     });
   };
   renderer.image = function(href, title, text) {
@@ -128,6 +108,7 @@ mdLinks.markdownLinkExtractor = (file, markdown, line) => {
       href: href,
       text: text,
       file: file,
+      line: line
     });
   };
   Marked(markdown, {renderer: renderer});
