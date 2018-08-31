@@ -13,18 +13,14 @@ mdLinks.mdLinks = (myPath, options) => {
     let resolvedPath = mdLinks.validatePath(myPath);
     let validateTypeOfPath = mdLinks.isFileOrFolder(resolvedPath);
     if (validateTypeOfPath === 'folder') {
-      mdLinks.isFolder(resolvedPath).then((data) => {
-        resolve(data);
-      });
+      mdLinks.isFolder(resolvedPath).then(data => resolve(data));
     } else if (validateTypeOfPath === 'file') {
-      mdLinks.isFile(resolvedPath).then((data) => {
-        resolve(data);
-      });   
+      mdLinks.isFile(resolvedPath).then(data => resolve(data));   
     }
   });
 };
 
-mdLinks.validatePath = (myPath) => {
+mdLinks.validatePath = myPath => {
   try {
     const isAbsolute = mdLinks.isAbsolute(myPath);
     if (isAbsolute === false) {
@@ -37,7 +33,7 @@ mdLinks.validatePath = (myPath) => {
   }
 };
 
-mdLinks.isAbsolute = (myPath) => {
+mdLinks.isAbsolute = myPath => {
   const checkPath = path.resolve(myPath) === path.normalize(myPath).replace(/[\/|\\]$/, '');
   if (checkPath === false) {
     return false;
@@ -46,9 +42,7 @@ mdLinks.isAbsolute = (myPath) => {
   }
 };
 
-mdLinks.convertToAbsolutePath = (myPath) => {
-  return path.resolve(myPath);
-};
+mdLinks.convertToAbsolutePath = myPath => path.resolve(myPath);
 
 mdLinks.isFileOrFolder = (myPath) => {
   const fsStats = fs.lstatSync(myPath);
@@ -59,7 +53,7 @@ mdLinks.isFileOrFolder = (myPath) => {
   }
 };
 
-mdLinks.isFolder = (myPath) => {
+mdLinks.isFolder = myPath => {
   return new Promise((resolve, reject) => {
     fs.readdir(myPath, 'utf8', function(err, files) {
       const filePromises = files.map((aFile) => {
@@ -89,13 +83,8 @@ mdLinks.isFile = (file) => {
   });
 };
 
-mdLinks.checkExtName = (file) => {
-  return path.extname(file);
-};
+mdLinks.checkExtName = file => path.extname(file);
 
-// Función necesaria para extraer los links usando marked
-// (tomada desde biblioteca del mismo nombre y modificada para el ejercicio)
-// Recibe texto en markdown y retorna sus links en un arreglo
 mdLinks.markdownLinkExtractor = (file, markdown, line) => {
   const links = [];
   const renderer = new Marked.Renderer();
