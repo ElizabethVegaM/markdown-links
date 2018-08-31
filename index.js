@@ -41,7 +41,7 @@ if (require.main === module) {
             }
             result.push({
               totals: links.filter(link => link.href).length,
-              sucess: successCounter,
+              success: successCounter,
               failure: failCounter
             });
           }
