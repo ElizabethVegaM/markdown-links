@@ -52,15 +52,11 @@ mdLinks.convertToAbsolutePath = (myPath) => {
 };
 
 mdLinks.isFileOrFolder = (myPath) => {
-  try {
-    const fsStats = fs.lstatSync(myPath);
-    if (fsStats.isFile()) {
-      return 'file';
-    } else if (fsStats.isDirectory()) {
-      return 'folder';
-    }
-  } catch (err) {
-    console.error(err, 'No es un archivo o carpeta');
+  const fsStats = fs.lstatSync(myPath);
+  if (fsStats.isFile()) {
+    return 'file';
+  } else if (fsStats.isDirectory()) {
+    return 'folder';
   }
 };
 
@@ -99,13 +95,13 @@ mdLinks.checkExtName = (file) => {
 };
 
 mdLinks.validateLink = (links) => {
-  return new Promise((resolve, reject) => {
-    fetch(links)
-      .then(res => res.status)
-      .then(body => console.log(body))
-      .catch((err) => {
-        reject(err);
-      });
+  fetch('https://github.com/')
+  .then(res => {
+      console.log(res.ok);
+      console.log(res.status);
+      console.log(res.statusText);
+      console.log(res.headers.raw());
+      console.log(res.headers.get('content-type'));
   });
 };
 
@@ -124,14 +120,12 @@ mdLinks.markdownLinkExtractor = (file, markdown, line) => {
   Marked.InlineLexer.rules.breaks.link = linkWithImageSizeSupport;
 
   renderer.link = function(href, title, text) {
-    // let linkStatus = mdLinks.validateLink(href);
-    // console.log(linkStatus);
     links.push({
       href: href,
       text: text,
       file: file,
       line: line,
-      // status: linkStatus,
+      status: 'holo',
     });
   };
   renderer.image = function(href, title, text) {
@@ -142,9 +136,6 @@ mdLinks.markdownLinkExtractor = (file, markdown, line) => {
       file: file,
       line: line
     });
-    if (validate === true) {
-      mdLinks.validateLink(href);
-    }
   };
   Marked(markdown, {renderer: renderer});
   return links;

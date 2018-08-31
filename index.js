@@ -1,5 +1,6 @@
 const mdLinks = require('../scl-2018-01-FE-markdown/mdlinks').mdLinks;
 const path = require('path');
+const fetch = require('node-fetch');
 const [, , ...args] = process.argv;
 // en el caso de arriba omite las primeras dos palabras que escribe el usuario en la consola
 // por cada espacio se hace un nuevo elemento en process.argv
@@ -12,14 +13,20 @@ if (require.main === module) {
     let result = [];
     links.map(element => {
       if (options.validate) {
-        result.push({
-          href: element.href, 
-          text: element.text, 
-          file: element.file,
-          line: element.line,
-          status: element.status,
-          ok: 'algo true o false'
-        });
+        fetch(element.href)
+          .then(res => {
+            result.push({
+              href: element.href, 
+              text: element.text, 
+              file: element.file,
+              line: element.line,
+              status: res.status,
+              ok: res.ok
+            });
+            console.log(result);
+          }).catch(err => {
+            console.error(err)
+          });
       } else {
         result.push({
           href: element.href, 

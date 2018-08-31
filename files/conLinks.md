@@ -130,38 +130,6 @@ las siguientes propiedades:
 - `text`: Texto que aparecía dentro del link (`<a>`).
 - `file`: Ruta del archivo donde se encontró el link.
 
-#### Ejemplo
-
-```js
-const mdLinks = require("md-links");
-
-mdLinks("./some/example.md")
-  .then(links => {
-    // => [{ href, text, file }]
-  })
-  .catch(console.error);
-
-mdLinks("./some/example.md", { validate: true })
-  .then(links => {
-    // => [{ href, text, file, status, ok }]
-  })
-  .catch(console.error);
-
-mdLinks("./some/example.md", { stats: true })
-  .then(links => {
-    // => [{ href, text, file, total, unique, domains }]
-  })
-  .catch(console.error);
-
-/*
- * HACKER EDITION
- */
-mdLinks("./some/dir")
-  .then(links => {
-    // => [{ href, text, file }]
-  })
-  .catch(console.error);
-```
 
 ### CLI (Línea de comando)
 
@@ -170,13 +138,6 @@ manera a través de la terminal:
 
 `md-links <path-to-file> [options]`
 
-Por ejemplo:
-
-```sh
-$ md-links ./some/example.md
-./some/example.md:10 http://algo.com/2/3/ Link a algo
-./some/example.md:15 https://otra-cosa.net/algun-doc.html algún doc
-./some/example.md:40 http://google.com/ Google
 ```
 
 El comportamiento por defecto no debe validar si las URLs responden ok o no,
@@ -193,13 +154,6 @@ Si pasamos la opción `--validate`, el módulo debe hacer una petición HTTP par
 averiguar si el link funciona o no. Si el link resulta en una redirección a una
 URL que responde ok, entonces consideraremos el link como ok.
 
-Por ejemplo:
-
-```sh
-$ md-links ./some/example.md --validate
-./some/example.md:10 http://algo.com/2/3/ ok 200 Link a algo
-./some/example.md:15 https://otra-cosa.net/algun-doc.html fail 404 algún doc
-./some/example.md:40 http://google.com/ ok 301 Google
 ```
 
 Vemos que el _output_ en este caso incluye la palabra `ok` o `fail` después de
