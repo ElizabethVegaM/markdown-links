@@ -11,10 +11,12 @@ if (require.main === module) {
   if (process.argv.includes('--stats')) options.stats = true;
   mdLinks(path.join(process.cwd(), args[0]), options).then((links) => {
     let result = [];
+    let successCounter = 0;
+    let failCounter = 0;
     links.map(element => {
-      if (options.validate) {
-        fetch(element.href)
-          .then(res => {
+      fetch(element.href)
+        .then(res => {
+          if (options.validate) {
             result.push({
               href: element.href, 
               text: element.text, 
@@ -23,30 +25,35 @@ if (require.main === module) {
               status: res.status,
               ok: res.ok
             });
-            console.log(result);
-          }).catch(err => {
-            console.error(err)
-          });
-      } else {
-        result.push({
-          href: element.href, 
-          text: element.text, 
-          file: element.file,
-          line: element.line
+          } else {
+            result.push({
+              href: element.href, 
+              text: element.text, 
+              file: element.file,
+              line: element.line
+            });
+          }
+          if (options.stats) {
+            if (res.ok === true) {
+              successCounter++;
+            } else if (res.ok === false) {
+              failCounter++;
+            }
+            result.push({
+              totals: links.filter(link => link.href).length,
+              sucess: successCounter,
+              failure: failCounter
+            });
+          }
+          console.log(result);
+        }).then(res => {
+          
+        })
+        .catch(err => {
+          console.error(err);
         });
-      }
     });
-    if (options.stats) {
-      result.push({
-        totals: result.length,
-        sucess: 'links que estan con estado ok',
-        failure: 'links que fallaron validacion'
-      });
-    }
-    console.log(result);
   }).catch((err) => {
     console.error(err);
   });
 };
-
-

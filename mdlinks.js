@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const Marked = require('marked');
-const fetch = require('node-fetch');
 let mdLinks = {};
 let validate = false;
 let stats = false;
@@ -93,18 +92,6 @@ mdLinks.isFile = (file) => {
 mdLinks.checkExtName = (file) => {
   return path.extname(file);
 };
-
-mdLinks.validateLink = (links) => {
-  fetch('https://github.com/')
-  .then(res => {
-      console.log(res.ok);
-      console.log(res.status);
-      console.log(res.statusText);
-      console.log(res.headers.raw());
-      console.log(res.headers.get('content-type'));
-  });
-};
-
 
 // Función necesaria para extraer los links usando marked
 // (tomada desde biblioteca del mismo nombre y modificada para el ejercicio)
