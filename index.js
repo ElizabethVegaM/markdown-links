@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const mdLinks = require('../scl-2018-01-FE-markdown/mdlinks').mdLinks;
 const path = require('path');
 const fetch = require('node-fetch');
@@ -46,8 +48,6 @@ if (require.main === module) {
             });
           }
           console.log(result);
-        }).then(res => {
-          
         })
         .catch(err => {
           console.error(err);

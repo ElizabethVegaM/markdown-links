@@ -17,6 +17,7 @@ mdLinks.mdLinks = (myPath, options) => {
     } else if (validateTypeOfPath === 'file') {
       mdLinks.isFile(resolvedPath).then(data => resolve(data));   
     }
+    
   });
 };
 
@@ -76,7 +77,7 @@ mdLinks.isFile = (file) => {
     if (fileExt === '.md') {
       fs.readFile(file, 'utf8', (err, data) => {
         if (err) reject(err);
-        data = data.split('\n').map(element => mdLinks.markdownLinkExtractor(file, element, data.indexOf(element) + 1)).filter(element => element.length !== 0).reduce((value1, value2) => value1.concat(value2));
+        data = data.split('\n').map((element, index) => mdLinks.markdownLinkExtractor(file, element, index + 1)).filter(element => element.length !== 0).reduce((value1, value2) => value1.concat(value2));
         resolve(data);
       }); 
     }
