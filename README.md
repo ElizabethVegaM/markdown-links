@@ -39,14 +39,6 @@ var fs = require('fs')
 npm install colors
 ```
 
-## Versiones de la librería 📄
-
-### Versión 1.0.0
-Versión inicial con todas las características básicas. Se incluye la opción de validar links (--validate) y ver estadísticas básicas (--stats)
-### Versión 1.0.1
-- Se añade el paquete [Colors](https://www.npmjs.com/package/colors) para visualizar mejor los datos en la terminal.
-- Se mejora la manera en la que se imprimen los datos.
-
 ## Snippets de uso 🎁
 
 Este proyecto puede ser utilizado a través de la terminal CLI
@@ -75,9 +67,9 @@ $ md-links README.md --validate
  ]
 ```
 
-Usando validate y --stats (pueden usarse tanto juntos como separados)
+Usando --validate y --stats (pueden usarse tanto juntos como separados)
 ```
-$ md-links README.md --validate
+$ md-links README.md --validate --stats
  [
    {'./some/example.md: 10 - http://algo.com/2/3/ Link a algo 200 true'}
    {'./some/example.md: 15 - https://otra-cosa.net/algun-doc.html 404 false'}
@@ -85,7 +77,10 @@ $ md-links README.md --validate
    { totals: 3, success: 2, failure: 1 }
  ]
 ```
+## Versiones de la librería 📄
 
-## Autores ✒️
-
-* **Elizabeth Vega** - [ElizabethVegaM](https://github.com/ElizabethVegaM)
+### Versión 1.0.0
+Versión inicial con todas las características básicas. Se incluye la opción de validar links (--validate) y ver estadísticas básicas (--stats)
+### Versión 1.0.1
+- Se añade el paquete [Colors](https://www.npmjs.com/package/colors) para visualizar mejor los datos en la terminal.
+- Se mejora la manera en la que se imprimen los datos.
