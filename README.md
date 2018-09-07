@@ -18,7 +18,7 @@ Para el correcto funcionamiento de este proyecto necesitas tener instalado [Node
 
 ### Instalación 🔧
 
-Para utilizar esta librería primero debes descomprimir el archivo .zip que se encuentra disponible en la pestaña 'releases' de este repositorio.
+Para utilizar esta librería primero debes descomprimir el archivo .zip que se encuentra disponible en la pestaña 'releases' de este repositorio. También puedes encontrar el package en la página de [npm](https://www.npmjs.com/package/theraven-md-links)
 
 Debes instalar el módulo con npm
 
